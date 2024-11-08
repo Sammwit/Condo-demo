@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Form with Auto-Incrementing ID</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <style>
+        #progress_bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            margin-top: 10px;
+        }
+        .percent {
+            width: 0%;
+            height: 20px;
+            background-color: #4caf50;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+        }
+        /* ตั้งค่าทั่วไป */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      height: 100vh;
+      overflow-y: auto; /* เปิดการเลื่อนหน้าเว็บ */
+    }
+
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+    }
+
+    /* ตกแต่งฟอร์ม */
+    form {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      padding: 20px;
+      margin: 0 auto; /* จัดให้อยู่ตรงกลาง */
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 1em;
+      background: #f9f9f9;
+    }
+    /* ตกแต่ง radio และ checkbox */
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .checkbox-group,
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .checkbox-group label,
+    .radio-group label {
+      width: auto;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    </style>
+</head>
+<body>  
+    <form action="https://script.google.com/macros/s/AKfycbwhFefj0KZXmV32UZLuswR1t10K9Zynu2HvWJs05DBwTx437NN2StVnJb4PKVl2oWRV/exec" id="form" method="post">
+        <!-- ฟิลด์ ID ที่กำหนดเอง -->
+        <label>ID:</label><input type="text" id="ID" name="ID" readonly><br>
+        
+        <!-- ฟิลด์ข้อมูลทั่วไป -->
+        <label>ประเภท:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="ประเภท" value="เช่า" required> เช่า</label>
+          <label><input type="radio" name="ประเภท" value="ขาย"> ขาย</label>
+          <label><input type="radio" name="ประเภท" value="เช่า/ขาย"> เช่า/ขาย</label>
+        </div>
+        <label>ชื่อโครงการ:</label><input type="text" name="ชื่อโครงการ"><br>
+        <label>Project Name:</label><input type="text" name="ProjectName"><br>
+        <label>ราคาเช่า:</label><input type="number" name="ราคา"><br>
+        <label>ราคาซื้อ:</label><input type="number" name="ราคาซื้อ"><br>
+        <label>ชั้น:</label><input type="number" name="ชั้น"><br>
+        <label>ขนาดห้อง:</label><input type="number" name="ขนาดห้อง"><br>
+        <label>จำนวนห้อง:</label><input type="number" name="จำนวนห้อง"><br>
+        <label>จำนวนห้องน้ำ:</label><input type="number" name="จำนวนห้องน้ำ"><br>
+        <label>ลักษณะห้องนอน:</label>
+          <select name="ลักษณะห้องนอน" required>
+            <option value="Studio">Studio</option>
+            <option value="1 Bedroom">1 Bedroom</option>
+            <option value="2 Bedrooms">2 Bedrooms</option>
+            <option value="3 Bedrooms">3 Bedrooms</option>
+            <option value="Duplex">Duplex</option>
+          </select>
+        <label>รายละเอียดเพิ่มเติม:</label>
+        <p>ระบุข้อมูลเพิ่มเติมเกี่ยวกับคอนโด เช่น การตกแต่งพิเศษหรืออื่น ๆ</p>
+        <label>เครื่องใช้ไฟฟ้า:</label><br>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="แอร์" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> แอร์</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เครื่องทำน้ำอุ่น" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เครื่องทำน้ำอุ่น</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="ทีวี" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> ทีวี</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เครื่องซักผ้า" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เครื่องซักผ้า</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="ตู้เย็น" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> ตู้เย็น</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เตาไฟฟ้า" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เตาไฟฟ้า</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="ไมโครเวฟ" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> ไมโครเวฟ</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เครื่องดูดฝุ่น" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เครื่องดูดฝุ่น</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="Digital Door Lock" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> Digital Door Lock</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เครื่องดูดควัน" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เครื่องดูดควัน</label>
+          <label><input type="checkbox" name="เครื่องใช้ไฟฟ้า" value="เครื่องล้างจาน" onchange="updateSelected('เครื่องใช้ไฟฟ้า')"> เครื่องล้างจาน</label>
+        </div>
+        <input type="text" id="selectedAppliances" readonly placeholder="รายการเครื่องใช้ไฟฟ้าที่เลือก">
+        
+        <label>สิ่งอำนวยความสะดวก:</label><br>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="สระว่ายน้ำ" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> สระว่ายน้ำ</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="ฟิตเนส" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> ฟิตเนส</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="ซาวน่า" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> ซาวน่า</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="Co-working space" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> Co-working space</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="ลิฟต์" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> ลิฟต์</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="สวนหย่อม" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> สวนหย่อม</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="ร้านค้าในโครงการ" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> ร้านค้าในโครงการ</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="กล้องCCTV" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> กล้องCCTV</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="รปภ.24ชม." onchange="updateSelected('สิ่งอำนวยความสะดวก')"> รปภ.24ชม.</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="ห้องสมุด" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> ห้องสมุด</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="โรงหนัง" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> โรงหนัง</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="Shuttle Bus" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> Shuttle Bus</label>
+          <label><input type="checkbox" name="สิ่งอำนวยความสะดวก" value="สนามเด็กเล่น" onchange="updateSelected('สิ่งอำนวยความสะดวก')"> สนามเด็กเล่น</label>
+        </div>
+        <input type="text" id="selectedFacilities" readonly placeholder="รายการสิ่งอำนวยความสะดวกที่เลือก">
+        <label>Owner:</label><input type="text" name="owner"><br>
+        <label>สนใจติดต่อ:</label><input type="text" name="สนใจติดต่อ"><br>
+        <label>ลิงก์ต้นโพสต์:</label><input type="text" name="ลิงก์ต้นโพสต์"><br>
+        
+        <!-- อัปโหลดรูป -->
+        <label>Upload files:</label>
+        <div id="data"></div>
+        <input name="file" id="uploadfile" type="file" accept="image/*" multiple>        
+        <input id="btnSubmit" type="submit" value="Submit">
+
+    </form>
+    
+    <div id="progress_bar"><div class="percent">0%</div></div>
+
+    <script>
+        // ฟังก์ชันอัปเดตค่าที่เลือก
+        function updateSelected(type) {
+            const selectedValues = Array.from(document.querySelectorAll(`input[name="${type}"]:checked`))
+                .map(el => el.value);  // ดึงค่าที่เลือกทั้งหมดเป็นอาเรย์
+
+            // กำหนดค่าที่เลือกในช่อง input
+            if (type === "เครื่องใช้ไฟฟ้า") {
+                document.getElementById("selectedAppliances").value = selectedValues.join(", ");
+            } else if (type === "สิ่งอำนวยความสะดวก") {
+                document.getElementById("selectedFacilities").value = selectedValues.join(", ");
+            }
+        }
+
+        // ฟังก์ชันอัปเดตความคืบหน้า
+        var progress = document.querySelector('.percent');
+        
+        function handleFileSelect(evt) {
+            progress.style.width = '0%';
+            progress.textContent = '0%';
+
+            const files = evt.target.files;
+            const dataDiv = document.getElementById("data");
+            dataDiv.innerHTML = ""; 
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const html = `
+                        <input type="hidden" name="data${index}" value="${e.target.result.replace(/^.*,/, '')}">
+                        <input type="hidden" name="mimetype${index}" value="${e.target.result.match(/^.*(?=;)/)[0]}">
+                        <input type="hidden" name="filename${index}" value="${file.name}">
+                    `;
+                    dataDiv.insertAdjacentHTML("beforeend", html);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('uploadfile').addEventListener('change', handleFileSelect, false);
+    </script>
+</body>
+</html>
